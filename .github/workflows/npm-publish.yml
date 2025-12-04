@@ -21,6 +21,11 @@ jobs:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
 
+      - name: Verify npm authentication
+        run: npm whoami
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Extract and update version
         id: extract_version
         run: |
@@ -37,7 +42,9 @@ jobs:
         run: npm ci
 
       - name: Publish to npm
-        run: npm publish --access public
+        run: |
+          echo "Publishing teams-guide-mcp..."
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
