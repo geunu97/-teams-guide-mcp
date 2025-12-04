@@ -1,0 +1,12 @@
+node_modules/
+*.log
+.DS_Store
+.env
+dist/
+build/
+.git/
+.gitignore
+.npmignore
+CURSOR_SETUP.md
+package-lock.json
+

@@ -1,0 +1,54 @@
+name: NPM Publish
+
+on:
+  push:
+    tags:
+      - "v*.*.*" # v1.0.0, v1.2.3 등의 태그 형식
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 태그 정보를 가져오기 위해 필요
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Extract and update version
+        id: extract_version
+        run: |
+          # 태그에서 버전 추출 (v1.0.0 -> 1.0.0)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Extracted version: $VERSION"
+
+          # package.json 버전 업데이트
+          npm version $VERSION --no-git-tag-version
+          echo "Updated package.json version to $VERSION"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ steps.extract_version.outputs.version }}
+          body: |
+            ## Changes in version ${{ steps.extract_version.outputs.version }}
+
+            See [CHANGELOG.md](CHANGELOG.md) for details.
+          draft: false
+          prerelease: false
