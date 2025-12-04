@@ -22,7 +22,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/geunu97/-teams-guide-mcp"
+    "url": "git+https://github.com/geunu97/-teams-guide-mcp.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.5.0"
